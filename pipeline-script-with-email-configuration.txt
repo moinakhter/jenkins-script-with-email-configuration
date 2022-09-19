@@ -1,11 +1,22 @@
 pipeline{
   agent any
+   environment {
+       EMAIL = 'moinakhtar@dizaynvip.com'
+       EMAIL_SUCCESS_SUBJECT = " is Success"
+       EMAIL_FAILURE_SUBJECT = "  is Failure"
+       EMAIL_UNSTABLE_SUBJECT = " is Unstable"
+       EMAIL_SUCCESS_MSG = "  is Success, please find attached logs file."
+       EMAIL_FAILURE_MSG = "  is Failure, please find attached logs file."
+       EMAIL_UNSTABLE_MSG = " is Unstable, please find attached logs file."
+       ENV_PYTHON_PATH = ".venv/bin/python3.9"
+   }
   stages {
 
-        stage('Assistant Checkout'){
+        stage("Assistant Checkout "){
           
            steps {
-                git branch: 'development', changelog: false, credentialsId: 'bitbucket-cre', poll: false, url: 'https://bitbucket.org/dizaynviptech/assistant.git'
+              //  git branch: 'development', changelog: false, credentialsId: 'bitbucket-cre', poll: false, url: 'https:/bitbucket.org/dizaynviptech/assistant.git'
+               // sh "git checkout pyinstaller_scripts_for_assistant_services"
                 sh "sudo mkdir -p release"
                 sh "sudo mkdir -p .venv"
                 sh "sudo chmod -R 777 ."
@@ -16,13 +27,13 @@ pipeline{
 
             post {
                 success {
-                    emailext attachLog: true, body: 'Assistant Checkout is Success, please find attached logs file.', subject: 'Assistant Checkout is Success', to: 'me@moinakhter.com'
+                    emailext attachLog: true, body: env.STATE_NAME + ' ' + EMAIL_SUCCESS_MSG, subject: env.STATE_NAME + ' '+ EMAIL_SUCCESS_SUBJECT, to: env.EMAIL
                 }
                 unstable {
-                    emailext attachLog: true, body: 'Assistant Checkout is Unstable, please find attached logs file.', subject: 'Assistant Checkout is Unstable', to: 'me@moinakhter.com'
+                    emailext attachLog: true, body: env.STATE_NAME + ' ' + EMAIL_UNSTABLE_MSG, subject: env.STATE_NAME + ' '+ EMAIL_UNSTABLE_SUBJECT, to: env.EMAIL
                 }
                 failure {
-                emailext attachLog: true, body: 'Assistant Checkout is Failure, please find attached logs file. ', subject: ' Assistant Checkout   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                emailext attachLog: true, body: env.STATE_NAME + ' ' + EMAIL_FAILURE_MSG, subject: env.STATE_NAME + ' ' + EMAIL_FAILURE_SUBJECT, to: env.EMAIL
                 }
             }
 
@@ -40,13 +51,13 @@ pipeline{
                                         
             post {
                 success { 
-                    emailext attachLog: true, body: 'Environment Initialization is Success, please find attached log file..', subject: 'Environment Initialization is Success', to: 'me@moinakhter.com'
+                    emailext attachLog: true, body: env.STATE_NAME + ' ' + EMAIL_SUCCESS_MSG, subject: env.STATE_NAME + ' ' + EMAIL_SUCCESS_SUBJECT, to: env.EMAIL
                 }
                 unstable { 
-                    emailext attachLog: true, body: 'Environment Initialization is Unstable, please find attached logs file.', subject: 'Environment Initialization is Unstable', to: 'me@moinakhter.com'
+                    emailext attachLog: true, body: env.STATE_NAME + ' ' + EMAIL_UNSTABLE_MSG, subject: env.STATE_NAME + ' '+ EMAIL_UNSTABLE_SUBJECT, to: env.EMAIL
                 }
                 failure { 
-                emailext attachLog: true, body: 'Environment Initialization is Failure, please find attached logs file. ', subject: ' Environment Initialization   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                emailext attachLog: true, body: env.STATE_NAME + ' ' + EMAIL_FAILURE_MSG, subject: Eenv.STATE_NAME + ' ' + EMAIL_FAILURE_SUBJECT, to: env.EMAIL
                 }
             }
             
@@ -56,18 +67,18 @@ pipeline{
         stage('Testing - Face Recognition Service'){
         
           steps {
-                sh '.venv/bin/python3.9 tests/services_tests/facial_recognition_service.py'
+                sh env.ENV_PYTHON_PATH+' tests/services_tests/facial_recognition_service.py'
           }
           
           post {
                 success { 
-                    emailext attachLog: true, body: 'Testing - Face Recognition Service is Success, please find attached log file..', subject: 'Testing - Face Recognition Service is Success', to: 'me@moinakhter.com'
+                    emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_SUBJECT, to: env.EMAIL
                 }
                 unstable { 
-                    emailext attachLog: true, body: 'Testing - Face Recognition Service is Unstable, please find attached logs file.', subject: 'Testing - Face Recognition Service is Unstable', to: 'me@moinakhter.com'
+                    emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_SUBJECT, to: env.EMAIL
                 }
                 failure { 
-                emailext attachLog: true, body: 'Testing - Face Recognition Service is Failure, please find attached logs file. ', subject: ' Testing - Face Recognition Service   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_FAILURE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_FAILURE_SUBJECT, to: env.EMAIL
                 }
             }      
         }   
@@ -76,17 +87,17 @@ pipeline{
         stage('Testing - Question & Answer Service'){
           
             steps {
-                  sh ".venv/bin/python3.9 tests/services_tests/qa_service.py"
+                  sh env.ENV_PYTHON_PATH+" tests/services_tests/qa_service.py"
             }
             post {
                   success { 
-                      emailext attachLog: true, body: 'Testing - Question & Answer Service is Success, please find attached log file..', subject: 'Testing - Question & Answer Service is Success', to: 'me@moinakhter.com'
+                      emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_SUBJECT, to: env.EMAIL
                   }
                   unstable { 
-                      emailext attachLog: true, body: 'Testing - Question & Answer Service is Unstable, please find attached logs file.', subject: 'Testing - Question & Answer Service is Unstable', to: 'me@moinakhter.com'
+                      emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_SUBJECT, to: env.EMAIL
                   }
                   failure { 
-                  emailext attachLog: true, body: 'Testing - Question & Answer Service is Failure, please find attached logs file. ', subject: ' Testing - Question & Answer Service   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                  emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_FAILURE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_FAILURE_SUBJECT, to: env.EMAIL
                   }
               }      
         }   
@@ -95,17 +106,17 @@ pipeline{
         stage('Testing - Translation Service'){
           
             steps {
-                  sh ".venv/bin/python3.9 tests/services_tests/translation_service.py"
+                  sh env.ENV_PYTHON_PATH+" tests/services_tests/translation_service.py"
             }
             post {
                   success { 
-                      emailext attachLog: true, body: 'Testing - Translation Service is Success, please find attached log file..', subject: 'Testing - Translation Service is Success', to: 'me@moinakhter.com'
+                      emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_SUBJECT, to: env.EMAIL
                   }
                   unstable { 
-                      emailext attachLog: true, body: 'Testing - Translation Service is Unstable, please find attached logs file.', subject: 'Testing - Translation Service is Unstable', to: 'me@moinakhter.com'
+                      emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_SUBJECT, to: env.EMAIL
                   }
                   failure { 
-                  emailext attachLog: true, body: 'Testing - Translation Service is Failure, please find attached logs file. ', subject: ' Testing - Translation Service   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                  emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_FAILURE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_FAILURE_SUBJECT, to: env.EMAIL
                   }
               }      
         } 
@@ -114,17 +125,17 @@ pipeline{
         stage('Testing - Nlp Service'){
           
             steps {
-                  sh "sudo .venv/bin/python3.9 tests/services_tests/nlp_service.py"
+                  sh "sudo " + env.ENV_PYTHON_PATH+" tests/services_tests/nlp_service.py"
             }
             post {
                   success { 
-                      emailext attachLog: true, body: 'Testing - Nlp Service is Success, please find attached log file..', subject: 'Testing - Nlp Service is Success', to: 'me@moinakhter.com'
+                      emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_SUBJECT, to: env.EMAIL
                   }
                   unstable { 
-                      emailext attachLog: true, body: 'Testing - Nlp Service is Unstable, please find attached logs file.', subject: 'Testing - Nlp Service is Unstable', to: 'me@moinakhter.com'
+                      emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_SUBJECT, to: env.EMAIL
                   }
                   failure { 
-                  emailext attachLog: true, body: 'Testing - Nlp Service is Failure, please find attached logs file. ', subject: ' Testing - Nlp Service   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                  emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_FAILURE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_FAILURE_SUBJECT, to: env.EMAIL
                   }
               }      
         }  
@@ -133,17 +144,17 @@ pipeline{
         stage('Testing - Bert Service'){
           
             steps {
-                  sh "sudo .venv/bin/python3.9 tests/services_tests/bert_service.py"
+                  sh "sudo " + env.ENV_PYTHON_PATH+" tests/services_tests/bert_service.py"
             }
             post {
                   success { 
-                      emailext attachLog: true, body: 'Testing - Bert Service is Success, please find attached log file..', subject: 'Testing - Bert Service is Success', to: 'me@moinakhter.com'
+                      emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_SUBJECT, to: env.EMAIL
                   }
                   unstable { 
-                      emailext attachLog: true, body: 'Testing - Bert Service is Unstable, please find attached logs file.', subject: 'Testing - Bert Service is Unstable', to: 'me@moinakhter.com'
+                      emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_SUBJECT, to: env.EMAIL
                   }
                   failure { 
-                  emailext attachLog: true, body: 'Testing - Bert Service is Failure, please find attached logs file. ', subject: ' Testing - Bert Service   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                  emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_FAILURE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_FAILURE_SUBJECT, to: env.EMAIL
                   }
               }      
         } 
@@ -152,17 +163,17 @@ pipeline{
         stage('Testing - Roberta Service'){
           
             steps {
-                  sh "sudo .venv/bin/python3.9 tests/services_tests/roberta_service.py"
+                  sh "sudo " + env.ENV_PYTHON_PATH+" tests/services_tests/roberta_service.py"
             }
             post {
                   success { 
-                      emailext attachLog: true, body: 'Testing - Roberta Service is Success, please find attached log file..', subject: 'Testing - Roberta Service is Success', to: 'me@moinakhter.com'
+                      emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_SUBJECT, to: env.EMAIL
                   }
                   unstable { 
-                      emailext attachLog: true, body: 'Testing - Roberta Service is Unstable, please find attached logs file.', subject: 'Testing - Roberta Service is Unstable', to: 'me@moinakhter.com'
+                      emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_SUBJECT, to: env.EMAIL
                   }
                   failure { 
-                  emailext attachLog: true, body: 'Testing - Roberta Service is Failure, please find attached logs file. ', subject: ' Testing - Roberta Service   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                  emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_FAILURE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_FAILURE_SUBJECT, to: env.EMAIL
                   }
               }
         }  
@@ -171,17 +182,17 @@ pipeline{
         stage('Testing - Hologram Service'){
             
             steps {
-                  sh "sudo .venv/bin/python3.9   tests/services_tests/hologram_face_service.py"
+                  sh "sudo " + env.ENV_PYTHON_PATH+"   tests/services_tests/hologram_face_service.py"
             }
             post {
                   success { 
-                      emailext attachLog: true, body: 'Testing - Hologram Service is Success, please find attached log file..', subject: 'Testing - Hologram Service is Success', to: 'me@moinakhter.com'
+                      emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_SUBJECT, to: env.EMAIL
                   }
                   unstable { 
-                      emailext attachLog: true, body: 'Testing - Hologram Service is Unstable, please find attached logs file.', subject: 'Testing - Hologram Service is Unstable', to: 'me@moinakhter.com'
+                      emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_SUBJECT, to: env.EMAIL
                   }
                   failure { 
-                  emailext attachLog: true, body: 'Testing - Hologram Service is Failure, please find attached logs file. ', subject: ' Testing - Hologram Service   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                  emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_FAILURE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_FAILURE_SUBJECT, to: env.EMAIL
                   }
               }      
         }    
@@ -190,17 +201,17 @@ pipeline{
         stage('Testing - Wake Word Service'){
           
             steps {
-                  sh "sudo .venv/bin/python3.9 tests/services_tests/asr_service.py"
+                  sh "sudo " + env.ENV_PYTHON_PATH+" tests/services_tests/asr_service.py"
             }
             post {
                   success { 
-                      emailext attachLog: true, body: 'Testing - Wake Word Service is Success, please find attached log file..', subject: 'Testing - Wake Word Service is Success', to: 'me@moinakhter.com'
+                      emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_SUBJECT, to: env.EMAIL
                   }
                   unstable { 
-                      emailext attachLog: true, body: 'Testing - Wake Word Service is Unstable, please find attached logs file.', subject: 'Testing - Wake Word Service is Unstable', to: 'me@moinakhter.com'
+                      emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_SUBJECT, to: env.EMAIL
                   }
                   failure { 
-                  emailext attachLog: true, body: 'Testing - Wake Word Service is Failure, please find attached logs file. ', subject: ' Testing - Wake Word Service   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                  emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_FAILURE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_FAILURE_SUBJECT, to: env.EMAIL
                   }
               }      
         }
@@ -209,17 +220,17 @@ pipeline{
         stage('Generating -  Assistant Binary File '){
           
             steps {
-                  sh 'pyinstaller_scripts/assistant.sh -j'
+                  sh 'shells/binary_builds/assistant.sh'
             }
             post {
                   success { 
-                      emailext attachLog: true, body: 'Generating -  Assistant Binary File is Success, please find attached log file..', subject: 'Generating -  Assistant Binary File is Success', to: 'me@moinakhter.com'
+                      emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_SUBJECT, to: env.EMAIL
                   }
                   unstable { 
-                      emailext attachLog: true, body: 'Generating -  Assistant Binary File is Unstable, please find attached logs file.', subject: 'Generating -  Assistant Binary File is Unstable', to: 'me@moinakhter.com'
+                      emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_SUBJECT, to: env.EMAIL
                   }
                   failure { 
-                  emailext attachLog: true, body: 'Generating -  Assistant Binary File is Failure, please find attached logs file. ', subject: ' Generating -  Assistant Binary File   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                  emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_FAILURE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_FAILURE_SUBJECT, to: env.EMAIL
                   }
               }      
          } 
@@ -228,17 +239,17 @@ pipeline{
         stage('Generating -  Hologram Binary File '){
               
               steps {
-                    sh 'pyinstaller_scripts/hologram.sh -j'
+                    sh 'shells/binary_builds/hologram.sh'
                }
                post {
                 success {
-                    emailext attachLog: true, body: 'Generating -  Hologram Binary File is Success, please find attached log file..', subject: 'Generating -  Hologram Binary File is Success', to: 'me@moinakhter.com'
+                    emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_SUBJECT, to: env.EMAIL
                 }
                 unstable {
-                    emailext attachLog: true, body: 'Generating -  Hologram Binary File is Unstable, please find attached logs file.', subject: 'Generating -  Hologram Binary File is Unstable', to: 'me@moinakhter.com'
+                    emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_SUBJECT, to: env.EMAIL
                 }
                 failure {
-                emailext attachLog: true, body: 'Generating -  Hologram Binary File is Failure, please find attached logs file. ', subject: ' Generating -  Hologram Binary File   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_FAILURE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_FAILURE_SUBJECT, to: env.EMAIL
                 }
             }
          }  
@@ -247,17 +258,17 @@ pipeline{
         stage('Generating -  Face Recognition Binary File '){
              
                 steps {
-                      sh 'pyinstaller_scripts/face.sh -j'
+                      sh 'shells/binary_builds/face.sh'
                 }
                 post {
                       success {
-                          emailext attachLog: true, body: 'Generating -  Face Recognition Binary File is Success, please find attached log file..', subject: 'Generating -  Face Recognition Binary File is Success', to: 'me@moinakhter.com'
+                          emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_SUBJECT, to: env.EMAIL
                       }
                       unstable {
-                          emailext attachLog: true, body: 'Generating -  Face Recognition Binary File is Unstable, please find attached logs file.', subject: 'Generating -  Face Recognition Binary File is Unstable', to: 'me@moinakhter.com'
+                          emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_SUBJECT, to: env.EMAIL
                       }
                       failure {
-                      emailext attachLog: true, body: 'Generating -  Face Recognition Binary File is Failure, please find attached logs file. ', subject: ' Generating -  Face Recognition Binary File   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                      emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_FAILURE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_FAILURE_SUBJECT, to: env.EMAIL
                       }
                 }
         }
@@ -266,17 +277,17 @@ pipeline{
         stage('Generating -  Bert Binary File '){
               
                 steps {
-                       sh 'pyinstaller_scripts/bert.sh -j'
+                       sh 'shells/binary_builds/bert.sh'
                 }
                 post {
                       success {
-                          emailext attachLog: true, body: 'Generating -  Bert Binary File is Success, please find attached log file..', subject: 'Generating -  Bert Binary File is Success', to: 'me@moinakhter.com'
+                          emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_SUBJECT, to: env.EMAIL
                       }
                       unstable {
-                          emailext attachLog: true, body: 'Generating -  Bert Binary File is Unstable, please find attached logs file.', subject: 'Generating -  Bert Binary File is Unstable', to: 'me@moinakhter.com'
+                          emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_SUBJECT, to: env.EMAIL
                       }
                       failure {
-                      emailext attachLog: true, body: 'Generating -  Bert Binary File is Failure, please find attached logs file. ', subject: ' Generating -  Bert Binary File   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                      emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_FAILURE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_FAILURE_SUBJECT, to: env.EMAIL
                       }
                 }
         }
@@ -285,17 +296,17 @@ pipeline{
         stage('Generating -  Roberta Binary File '){
              
                 steps {
-                      sh 'pyinstaller_scripts/roberta.sh -j'
+                      sh 'shells/binary_builds/roberta.sh'
                 }
                 post {
                       success {
-                          emailext attachLog: true, body: 'Generating -  Roberta Binary File is Success, please find attached log file..', subject: 'Generating -  Roberta Binary File is Success', to: 'me@moinakhter.com'
+                          emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_SUBJECT, to: env.EMAIL
                       }
                       unstable {
-                          emailext attachLog: true, body: 'Generating -  Roberta Binary File is Unstable, please find attached logs file.', subject: 'Generating -  Roberta Binary File is Unstable', to: 'me@moinakhter.com'
+                          emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_SUBJECT, to: env.EMAIL
                       }
                       failure {
-                      emailext attachLog: true, body: 'Generating -  Roberta Binary File is Failure, please find attached logs file. ', subject: ' Generating -  Roberta Binary File   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                      emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_FAILURE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_FAILURE_SUBJECT, to: env.EMAIL
                       }
                   }
          }  
@@ -303,17 +314,17 @@ pipeline{
         
         stage('Generating - Nlp Binary File '){
                 steps {
-                      sh 'pyinstaller_scripts/nlp.sh -j'
+                      sh 'shells/binary_builds/nlp.sh'
                 }
                 post {
                   success {
-                      emailext attachLog: true, body: 'Generating - Nlp Binary File is Success, please find attached log file..', subject: 'Generating - Nlp Binary File is Success', to: 'me@moinakhter.com'
+                      emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_SUBJECT, to: env.EMAIL
                   }
                   unstable {
-                      emailext attachLog: true, body: 'Generating - Nlp Binary File is Unstable, please find attached logs file.', subject: 'Generating - Nlp Binary File is Unstable', to: 'me@moinakhter.com'
+                      emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_SUBJECT, to: env.EMAIL
                   }
                   failure {
-                  emailext attachLog: true, body: 'Generating - Nlp Binary File is Failure, please find attached logs file. ', subject: ' Generating - Nlp Binary File   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                  emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_FAILURE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_FAILURE_SUBJECT, to: env.EMAIL
                   }
                 }
         }
@@ -322,17 +333,17 @@ pipeline{
         stage('Generating -  Question and Answer Binary File '){
              
                 steps {
-                      sh 'pyinstaller_scripts/qa.sh -j'
+                      sh 'shells/binary_builds/qa.sh'
                 }
                 post {
                   success {
-                      emailext attachLog: true, body: 'Generating -  Question and Answer Binary File is Success, please find attached log file..', subject: 'Generating -  Question and Answer Binary File is Success', to: 'me@moinakhter.com'
+                      emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_SUBJECT, to: env.EMAIL
                   }
                   unstable {
-                      emailext attachLog: true, body: 'Generating -  Question and Answer Binary File is Unstable, please find attached logs file.', subject: 'Generating -  Question and Answer Binary File is Unstable', to: 'me@moinakhter.com'
+                      emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_SUBJECT, to: env.EMAIL
                   }
                   failure {
-                  emailext attachLog: true, body: 'Generating -  Question and Answer Binary File is Failure, please find attached logs file. ', subject: ' Generating -  Question and Answer Binary File   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                  emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_FAILURE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_FAILURE_SUBJECT, to: env.EMAIL
                   }
                 }
         }
@@ -341,17 +352,17 @@ pipeline{
         stage('Generating -  Noise Binary File '){
                
                 steps {
-                    sh 'pyinstaller_scripts/noise.sh -j'
+                    sh 'shells/binary_builds/noise.sh'
                 }
                 post {
                   success {
-                      emailext attachLog: true, body: 'Generating -  Noise Binary File  is Success, please find attached log file..', subject: 'Generating -  Noise Binary File  is Success', to: 'me@moinakhter.com'
+                      emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_SUBJECT, to: env.EMAIL
                   }
                   unstable {
-                      emailext attachLog: true, body: 'Generating -  Noise Binary File  is Unstable, please find attached logs file.', subject: 'Generating -  Noise Binary File  is Unstable', to: 'me@moinakhter.com'
+                      emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_SUBJECT, to: env.EMAIL
                   }
                   failure {
-                  emailext attachLog: true, body: 'Generating -  Noise Binary File  is Failure, please find attached logs file. ', subject: ' Generating -  Noise Binary File    is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                      emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_FAILURE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_FAILURE_SUBJECT, to: env.EMAIL
                   }
                }
         }
@@ -360,17 +371,17 @@ pipeline{
         stage('Generating -  Translation Binary File '){
                
                 steps {
-                    sh 'pyinstaller_scripts/translation.sh -j'
+                    sh 'shells/binary_builds/translation.sh'
                 }
                 post {
                   success {
-                      emailext attachLog: true, body: 'Generating -  Translation Binary File  is Success, please find attached log file..', subject: 'Generating -  Translation Binary File  is Success', to: 'me@moinakhter.com'
+                      emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_SUBJECT, to: env.EMAIL
                   }
                   unstable {
-                      emailext attachLog: true, body: 'Generating -  Translation Binary File  is Unstable, please find attached logs file.', subject: 'Generating -  Translation Binary File  is Unstable', to: 'me@moinakhter.com'
+                      emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_SUBJECT, to: env.EMAIL
                   }
                   failure {
-                  emailext attachLog: true, body: 'Generating -  Translation Binary File  is Failure, please find attached logs file. ', subject: ' Generating -  Translation Binary File    is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                  emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_FAILURE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_FAILURE_SUBJECT, to: env.EMAIL
                   }
                 }
         }
@@ -379,31 +390,21 @@ pipeline{
         stage('Generating Asr Binary File '){
               
                 steps {
-                      sh 'pyinstaller_scripts/asr.sh -j'
+                      sh 'shells/binary_builds/asr.sh'
                 }
                 post {
                   success {
-                      emailext attachLog: true, body: 'Generating Asr Binary File is Success, please find attached log file..', subject: 'Generating Asr Binary File is Success', to: 'me@moinakhter.com'
+                      emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_SUCCESS_SUBJECT, to: env.EMAIL
                   }
                   unstable {
-                      emailext attachLog: true, body: 'Generating Asr Binary File is Unstable, please find attached logs file.', subject: 'Generating Asr Binary File is Unstable', to: 'me@moinakhter.com'
+                      emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_UNSTABLE_SUBJECT, to: env.EMAIL
                   }
                   failure {
-                  emailext attachLog: true, body: 'Generating Asr Binary File is Failure, please find attached logs file. ', subject: ' Generating Asr Binary File   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                  emailext attachLog: true, body:  env.STATE_NAME + ' ' + EMAIL_FAILURE_MSG, subject:  env.STATE_NAME + ' ' + EMAIL_FAILURE_SUBJECT, to: env.EMAIL
                   }
                 }
         }
   }
-
-
-   post{
-        always{
-            emailext to: "me@moinakhter.com",
-            subject: "jenkins build:${currentBuild.currentResult}: ${env.JOB_NAME}",
-            body: "${currentBuild.currentResult}: Job ${env.JOB_NAME}\nMore Info can be found here: ${env.BUILD_URL}",
-            attachLog: true
-        }
-    }
 
 
 }
