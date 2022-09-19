@@ -1,0 +1,409 @@
+pipeline{
+  agent any
+  stages {
+
+        stage('Assistant Checkout'){
+          
+           steps {
+                git branch: 'development', changelog: false, credentialsId: 'bitbucket-cre', poll: false, url: 'https://bitbucket.org/dizaynviptech/assistant.git'
+                sh "sudo mkdir -p release"
+                sh "sudo mkdir -p .venv"
+                sh "sudo chmod -R 777 ."
+                sh "sudo cp -R /home/dai1/Project/assistant/resources /var/lib/jenkins/workspace/assistant3/resources"
+                sh "sudo chmod -R 777 ."
+                sh "sudo chmod -R 777 ./*"
+            }
+
+            post {
+                success {
+                    emailext attachLog: true, body: 'Assistant Checkout is Success, please find attached logs file.', subject: 'Assistant Checkout is Success', to: 'me@moinakhter.com'
+                }
+                unstable {
+                    emailext attachLog: true, body: 'Assistant Checkout is Unstable, please find attached logs file.', subject: 'Assistant Checkout is Unstable', to: 'me@moinakhter.com'
+                }
+                failure {
+                emailext attachLog: true, body: 'Assistant Checkout is Failure, please find attached logs file. ', subject: ' Assistant Checkout   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                }
+            }
+
+        }
+        
+        
+        stage('Environment Initialization'){
+          
+            steps {
+                    sh "ls -a" 
+                    sh "which python3.9"
+                    sh "python3.9 -m pip install pipenv"
+                    sh 'python3.9 -m pipenv install --dev'
+            }
+                                        
+            post {
+                success { 
+                    emailext attachLog: true, body: 'Environment Initialization is Success, please find attached log file..', subject: 'Environment Initialization is Success', to: 'me@moinakhter.com'
+                }
+                unstable { 
+                    emailext attachLog: true, body: 'Environment Initialization is Unstable, please find attached logs file.', subject: 'Environment Initialization is Unstable', to: 'me@moinakhter.com'
+                }
+                failure { 
+                emailext attachLog: true, body: 'Environment Initialization is Failure, please find attached logs file. ', subject: ' Environment Initialization   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                }
+            }
+            
+        }
+        
+             
+        stage('Testing - Face Recognition Service'){
+        
+          steps {
+                sh '.venv/bin/python3.9 tests/services_tests/facial_recognition_service.py'
+          }
+          
+          post {
+                success { 
+                    emailext attachLog: true, body: 'Testing - Face Recognition Service is Success, please find attached log file..', subject: 'Testing - Face Recognition Service is Success', to: 'me@moinakhter.com'
+                }
+                unstable { 
+                    emailext attachLog: true, body: 'Testing - Face Recognition Service is Unstable, please find attached logs file.', subject: 'Testing - Face Recognition Service is Unstable', to: 'me@moinakhter.com'
+                }
+                failure { 
+                emailext attachLog: true, body: 'Testing - Face Recognition Service is Failure, please find attached logs file. ', subject: ' Testing - Face Recognition Service   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                }
+            }      
+        }   
+              
+                
+        stage('Testing - Question & Answer Service'){
+          
+            steps {
+                  sh ".venv/bin/python3.9 tests/services_tests/qa_service.py"
+            }
+            post {
+                  success { 
+                      emailext attachLog: true, body: 'Testing - Question & Answer Service is Success, please find attached log file..', subject: 'Testing - Question & Answer Service is Success', to: 'me@moinakhter.com'
+                  }
+                  unstable { 
+                      emailext attachLog: true, body: 'Testing - Question & Answer Service is Unstable, please find attached logs file.', subject: 'Testing - Question & Answer Service is Unstable', to: 'me@moinakhter.com'
+                  }
+                  failure { 
+                  emailext attachLog: true, body: 'Testing - Question & Answer Service is Failure, please find attached logs file. ', subject: ' Testing - Question & Answer Service   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                  }
+              }      
+        }   
+            
+                
+        stage('Testing - Translation Service'){
+          
+            steps {
+                  sh ".venv/bin/python3.9 tests/services_tests/translation_service.py"
+            }
+            post {
+                  success { 
+                      emailext attachLog: true, body: 'Testing - Translation Service is Success, please find attached log file..', subject: 'Testing - Translation Service is Success', to: 'me@moinakhter.com'
+                  }
+                  unstable { 
+                      emailext attachLog: true, body: 'Testing - Translation Service is Unstable, please find attached logs file.', subject: 'Testing - Translation Service is Unstable', to: 'me@moinakhter.com'
+                  }
+                  failure { 
+                  emailext attachLog: true, body: 'Testing - Translation Service is Failure, please find attached logs file. ', subject: ' Testing - Translation Service   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                  }
+              }      
+        } 
+        
+        
+        stage('Testing - Nlp Service'){
+          
+            steps {
+                  sh "sudo .venv/bin/python3.9 tests/services_tests/nlp_service.py"
+            }
+            post {
+                  success { 
+                      emailext attachLog: true, body: 'Testing - Nlp Service is Success, please find attached log file..', subject: 'Testing - Nlp Service is Success', to: 'me@moinakhter.com'
+                  }
+                  unstable { 
+                      emailext attachLog: true, body: 'Testing - Nlp Service is Unstable, please find attached logs file.', subject: 'Testing - Nlp Service is Unstable', to: 'me@moinakhter.com'
+                  }
+                  failure { 
+                  emailext attachLog: true, body: 'Testing - Nlp Service is Failure, please find attached logs file. ', subject: ' Testing - Nlp Service   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                  }
+              }      
+        }  
+            
+            
+        stage('Testing - Bert Service'){
+          
+            steps {
+                  sh "sudo .venv/bin/python3.9 tests/services_tests/bert_service.py"
+            }
+            post {
+                  success { 
+                      emailext attachLog: true, body: 'Testing - Bert Service is Success, please find attached log file..', subject: 'Testing - Bert Service is Success', to: 'me@moinakhter.com'
+                  }
+                  unstable { 
+                      emailext attachLog: true, body: 'Testing - Bert Service is Unstable, please find attached logs file.', subject: 'Testing - Bert Service is Unstable', to: 'me@moinakhter.com'
+                  }
+                  failure { 
+                  emailext attachLog: true, body: 'Testing - Bert Service is Failure, please find attached logs file. ', subject: ' Testing - Bert Service   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                  }
+              }      
+        } 
+          
+                   
+        stage('Testing - Roberta Service'){
+          
+            steps {
+                  sh "sudo .venv/bin/python3.9 tests/services_tests/roberta_service.py"
+            }
+            post {
+                  success { 
+                      emailext attachLog: true, body: 'Testing - Roberta Service is Success, please find attached log file..', subject: 'Testing - Roberta Service is Success', to: 'me@moinakhter.com'
+                  }
+                  unstable { 
+                      emailext attachLog: true, body: 'Testing - Roberta Service is Unstable, please find attached logs file.', subject: 'Testing - Roberta Service is Unstable', to: 'me@moinakhter.com'
+                  }
+                  failure { 
+                  emailext attachLog: true, body: 'Testing - Roberta Service is Failure, please find attached logs file. ', subject: ' Testing - Roberta Service   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                  }
+              }
+        }  
+                   
+                   
+        stage('Testing - Hologram Service'){
+            
+            steps {
+                  sh "sudo .venv/bin/python3.9   tests/services_tests/hologram_face_service.py"
+            }
+            post {
+                  success { 
+                      emailext attachLog: true, body: 'Testing - Hologram Service is Success, please find attached log file..', subject: 'Testing - Hologram Service is Success', to: 'me@moinakhter.com'
+                  }
+                  unstable { 
+                      emailext attachLog: true, body: 'Testing - Hologram Service is Unstable, please find attached logs file.', subject: 'Testing - Hologram Service is Unstable', to: 'me@moinakhter.com'
+                  }
+                  failure { 
+                  emailext attachLog: true, body: 'Testing - Hologram Service is Failure, please find attached logs file. ', subject: ' Testing - Hologram Service   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                  }
+              }      
+        }    
+               
+                
+        stage('Testing - Wake Word Service'){
+          
+            steps {
+                  sh "sudo .venv/bin/python3.9 tests/services_tests/asr_service.py"
+            }
+            post {
+                  success { 
+                      emailext attachLog: true, body: 'Testing - Wake Word Service is Success, please find attached log file..', subject: 'Testing - Wake Word Service is Success', to: 'me@moinakhter.com'
+                  }
+                  unstable { 
+                      emailext attachLog: true, body: 'Testing - Wake Word Service is Unstable, please find attached logs file.', subject: 'Testing - Wake Word Service is Unstable', to: 'me@moinakhter.com'
+                  }
+                  failure { 
+                  emailext attachLog: true, body: 'Testing - Wake Word Service is Failure, please find attached logs file. ', subject: ' Testing - Wake Word Service   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                  }
+              }      
+        }
+        
+        
+        stage('Generating -  Assistant Binary File '){
+          
+            steps {
+                  sh 'pyinstaller_scripts/assistant.sh -j'
+            }
+            post {
+                  success { 
+                      emailext attachLog: true, body: 'Generating -  Assistant Binary File is Success, please find attached log file..', subject: 'Generating -  Assistant Binary File is Success', to: 'me@moinakhter.com'
+                  }
+                  unstable { 
+                      emailext attachLog: true, body: 'Generating -  Assistant Binary File is Unstable, please find attached logs file.', subject: 'Generating -  Assistant Binary File is Unstable', to: 'me@moinakhter.com'
+                  }
+                  failure { 
+                  emailext attachLog: true, body: 'Generating -  Assistant Binary File is Failure, please find attached logs file. ', subject: ' Generating -  Assistant Binary File   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                  }
+              }      
+         } 
+         
+         
+        stage('Generating -  Hologram Binary File '){
+              
+              steps {
+                    sh 'pyinstaller_scripts/hologram.sh -j'
+               }
+               post {
+                success {
+                    emailext attachLog: true, body: 'Generating -  Hologram Binary File is Success, please find attached log file..', subject: 'Generating -  Hologram Binary File is Success', to: 'me@moinakhter.com'
+                }
+                unstable {
+                    emailext attachLog: true, body: 'Generating -  Hologram Binary File is Unstable, please find attached logs file.', subject: 'Generating -  Hologram Binary File is Unstable', to: 'me@moinakhter.com'
+                }
+                failure {
+                emailext attachLog: true, body: 'Generating -  Hologram Binary File is Failure, please find attached logs file. ', subject: ' Generating -  Hologram Binary File   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                }
+            }
+         }  
+
+
+        stage('Generating -  Face Recognition Binary File '){
+             
+                steps {
+                      sh 'pyinstaller_scripts/face.sh -j'
+                }
+                post {
+                      success {
+                          emailext attachLog: true, body: 'Generating -  Face Recognition Binary File is Success, please find attached log file..', subject: 'Generating -  Face Recognition Binary File is Success', to: 'me@moinakhter.com'
+                      }
+                      unstable {
+                          emailext attachLog: true, body: 'Generating -  Face Recognition Binary File is Unstable, please find attached logs file.', subject: 'Generating -  Face Recognition Binary File is Unstable', to: 'me@moinakhter.com'
+                      }
+                      failure {
+                      emailext attachLog: true, body: 'Generating -  Face Recognition Binary File is Failure, please find attached logs file. ', subject: ' Generating -  Face Recognition Binary File   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                      }
+                }
+        }
+        
+
+        stage('Generating -  Bert Binary File '){
+              
+                steps {
+                       sh 'pyinstaller_scripts/bert.sh -j'
+                }
+                post {
+                      success {
+                          emailext attachLog: true, body: 'Generating -  Bert Binary File is Success, please find attached log file..', subject: 'Generating -  Bert Binary File is Success', to: 'me@moinakhter.com'
+                      }
+                      unstable {
+                          emailext attachLog: true, body: 'Generating -  Bert Binary File is Unstable, please find attached logs file.', subject: 'Generating -  Bert Binary File is Unstable', to: 'me@moinakhter.com'
+                      }
+                      failure {
+                      emailext attachLog: true, body: 'Generating -  Bert Binary File is Failure, please find attached logs file. ', subject: ' Generating -  Bert Binary File   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                      }
+                }
+        }
+         
+         
+        stage('Generating -  Roberta Binary File '){
+             
+                steps {
+                      sh 'pyinstaller_scripts/roberta.sh -j'
+                }
+                post {
+                      success {
+                          emailext attachLog: true, body: 'Generating -  Roberta Binary File is Success, please find attached log file..', subject: 'Generating -  Roberta Binary File is Success', to: 'me@moinakhter.com'
+                      }
+                      unstable {
+                          emailext attachLog: true, body: 'Generating -  Roberta Binary File is Unstable, please find attached logs file.', subject: 'Generating -  Roberta Binary File is Unstable', to: 'me@moinakhter.com'
+                      }
+                      failure {
+                      emailext attachLog: true, body: 'Generating -  Roberta Binary File is Failure, please find attached logs file. ', subject: ' Generating -  Roberta Binary File   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                      }
+                  }
+         }  
+        
+        
+        stage('Generating - Nlp Binary File '){
+                steps {
+                      sh 'pyinstaller_scripts/nlp.sh -j'
+                }
+                post {
+                  success {
+                      emailext attachLog: true, body: 'Generating - Nlp Binary File is Success, please find attached log file..', subject: 'Generating - Nlp Binary File is Success', to: 'me@moinakhter.com'
+                  }
+                  unstable {
+                      emailext attachLog: true, body: 'Generating - Nlp Binary File is Unstable, please find attached logs file.', subject: 'Generating - Nlp Binary File is Unstable', to: 'me@moinakhter.com'
+                  }
+                  failure {
+                  emailext attachLog: true, body: 'Generating - Nlp Binary File is Failure, please find attached logs file. ', subject: ' Generating - Nlp Binary File   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                  }
+                }
+        }
+         
+
+        stage('Generating -  Question and Answer Binary File '){
+             
+                steps {
+                      sh 'pyinstaller_scripts/qa.sh -j'
+                }
+                post {
+                  success {
+                      emailext attachLog: true, body: 'Generating -  Question and Answer Binary File is Success, please find attached log file..', subject: 'Generating -  Question and Answer Binary File is Success', to: 'me@moinakhter.com'
+                  }
+                  unstable {
+                      emailext attachLog: true, body: 'Generating -  Question and Answer Binary File is Unstable, please find attached logs file.', subject: 'Generating -  Question and Answer Binary File is Unstable', to: 'me@moinakhter.com'
+                  }
+                  failure {
+                  emailext attachLog: true, body: 'Generating -  Question and Answer Binary File is Failure, please find attached logs file. ', subject: ' Generating -  Question and Answer Binary File   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                  }
+                }
+        }
+        
+          
+        stage('Generating -  Noise Binary File '){
+               
+                steps {
+                    sh 'pyinstaller_scripts/noise.sh -j'
+                }
+                post {
+                  success {
+                      emailext attachLog: true, body: 'Generating -  Noise Binary File  is Success, please find attached log file..', subject: 'Generating -  Noise Binary File  is Success', to: 'me@moinakhter.com'
+                  }
+                  unstable {
+                      emailext attachLog: true, body: 'Generating -  Noise Binary File  is Unstable, please find attached logs file.', subject: 'Generating -  Noise Binary File  is Unstable', to: 'me@moinakhter.com'
+                  }
+                  failure {
+                  emailext attachLog: true, body: 'Generating -  Noise Binary File  is Failure, please find attached logs file. ', subject: ' Generating -  Noise Binary File    is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                  }
+               }
+        }
+         
+           
+        stage('Generating -  Translation Binary File '){
+               
+                steps {
+                    sh 'pyinstaller_scripts/translation.sh -j'
+                }
+                post {
+                  success {
+                      emailext attachLog: true, body: 'Generating -  Translation Binary File  is Success, please find attached log file..', subject: 'Generating -  Translation Binary File  is Success', to: 'me@moinakhter.com'
+                  }
+                  unstable {
+                      emailext attachLog: true, body: 'Generating -  Translation Binary File  is Unstable, please find attached logs file.', subject: 'Generating -  Translation Binary File  is Unstable', to: 'me@moinakhter.com'
+                  }
+                  failure {
+                  emailext attachLog: true, body: 'Generating -  Translation Binary File  is Failure, please find attached logs file. ', subject: ' Generating -  Translation Binary File    is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                  }
+                }
+        }
+         
+         
+        stage('Generating Asr Binary File '){
+              
+                steps {
+                      sh 'pyinstaller_scripts/asr.sh -j'
+                }
+                post {
+                  success {
+                      emailext attachLog: true, body: 'Generating Asr Binary File is Success, please find attached log file..', subject: 'Generating Asr Binary File is Success', to: 'me@moinakhter.com'
+                  }
+                  unstable {
+                      emailext attachLog: true, body: 'Generating Asr Binary File is Unstable, please find attached logs file.', subject: 'Generating Asr Binary File is Unstable', to: 'me@moinakhter.com'
+                  }
+                  failure {
+                  emailext attachLog: true, body: 'Generating Asr Binary File is Failure, please find attached logs file. ', subject: ' Generating Asr Binary File   is Failure, please find attached logs file.', to: 'me@moinakhter.com'
+                  }
+                }
+        }
+  }
+
+
+   post{
+        always{
+            emailext to: "me@moinakhter.com",
+            subject: "jenkins build:${currentBuild.currentResult}: ${env.JOB_NAME}",
+            body: "${currentBuild.currentResult}: Job ${env.JOB_NAME}\nMore Info can be found here: ${env.BUILD_URL}",
+            attachLog: true
+        }
+    }
+
+
+}
