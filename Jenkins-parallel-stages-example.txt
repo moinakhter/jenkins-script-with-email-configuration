@@ -1,0 +1,176 @@
+pipeline{
+  agent any
+   environment {
+       EMAIL = 'me@moinakhter.com'
+       ENV_PYTHON_PATH = ".venv/bin/python3.9"
+   }
+  stages {
+
+        stage("Assistant Checkout "){
+           steps {
+                // Bitbucket-cre is the credentials of bitbucket repository.
+                // Development is the branch name of repository.
+                // Url is the branch clone url with username.
+                // Create bitbucket credentialsId using pipeline-syntax.
+                // There was a lot of permission issue with the files or folders, first time please test the pipeline there is no issue with permission.
+                sh "sudo chmod -R 777 /tmp/assistant "
+                sh "sudo chmod -R 777 /tmp/assistant/* "
+                git branch: 'development', credentialsId: 'bitbucket-cre', poll: false, url: 'https://moindizayn@bitbucket.org/dizaynviptech/assistant.git'
+                sh "sudo mkdir -p release"
+                sh "sudo mkdir -p .venv"
+                sh "sudo cp -R /home/dai1/Project/assistant/resources/* /var/lib/jenkins/workspace/assistant3/resources/"
+                sh "sudo chmod -R 777 ."
+                sh "sudo chmod -R 777 ./*"
+                sh "sudo chmod -R 777 assistant/recommendation/*"
+            }
+
+        }
+
+        stage('Environment Initialization'){
+            steps {
+                    sh "ls -a"
+                    sh "which python3.9"
+                    sh "python3.9 -m pip install pipenv"
+                    sh 'python3.9 -m pipenv install --dev'
+            }
+        }
+
+         stage('Testing - Nlp Service'){
+                      steps {
+                        sh "sudo " + env.ENV_PYTHON_PATH+" tests/services_tests/nlp_service.py"
+                        }
+                  }
+
+         stage('Testing - Bert Service'){
+                      steps {
+                         sh "sudo " + env.ENV_PYTHON_PATH+" tests/services_tests/bert_service.py"
+                      }
+                  }
+
+         stage('Testing - Roberta Service'){
+             steps {
+               sh "sudo " + env.ENV_PYTHON_PATH+" tests/services_tests/roberta_service.py"
+             }
+         }
+
+         stage('Testing - Face Recognition Service'){
+            steps {
+                    sh env.ENV_PYTHON_PATH+' tests/services_tests/facial_recognition_service.py'
+            }
+          }
+
+          stage('Testing - Question & Answer Service'){
+              steps {
+                    sh env.ENV_PYTHON_PATH+" tests/services_tests/qa_service.py"
+              }
+          }
+
+          stage('Testing - Translation Service'){
+              steps {
+                    sh env.ENV_PYTHON_PATH+" tests/services_tests/translation_service.py"
+              }
+          }
+
+          stage('Testing - Hologram Service'){
+              steps {
+                    sh "sudo " + env.ENV_PYTHON_PATH+"   tests/services_tests/hologram_face_service.py"
+              }
+          }
+
+          stage('Testing - Wake Word Service'){
+              steps {
+                    sh "sudo " + env.ENV_PYTHON_PATH+" tests/services_tests/asr_service.py"
+              }
+          }
+
+
+        stage('Generating Binary files'){
+
+             parallel {
+
+                  stage('Generating -  Assistant Binary File '){
+                        steps {
+                              sh 'shells/binary_builds/assistant.sh'
+                        }
+                     }
+
+                    stage('Generating -  Face Recognition Binary File '){
+                            steps {
+                                  sh 'shells/binary_builds/face.sh'
+                            }
+                    }
+
+                    stage('Generating -  Bert Binary File '){
+                            steps {
+                                   sh 'shells/binary_builds/bert.sh'
+                            }
+                    }
+
+                    stage('Generating -  Roberta Binary File '){
+                           steps {
+                                  sh 'shells/binary_builds/roberta.sh'
+                            }
+                     }
+
+                    stage('Generating - Nlp Binary File '){
+                            steps {
+                                  sh 'shells/binary_builds/nlp.sh'
+                            }
+                    }
+
+                    stage('Generating -  Question and Answer Binary File '){
+
+                            steps {
+                                  sh 'shells/binary_builds/qa.sh'
+                            }
+                    }
+
+                    stage('Generating -  Noise Binary File '){
+
+                            steps {
+                                sh 'shells/binary_builds/noise.sh'
+                            }
+                    }
+
+                    stage('Generating -  Translation Binary File '){
+
+                            steps {
+                                sh 'shells/binary_builds/translation.sh'
+                            }
+                    }
+
+                    stage('Generating Asr Binary File '){
+                            steps {
+                                  sh 'shells/binary_builds/asr.sh'
+                            }
+                    }
+
+                    stage('Generating -  Hologram Binary File '){
+                          steps {
+                                sleep(time: 5, unit: "SECONDS")
+                                sh 'shells/binary_builds/hologram.sh'
+                           }
+                     }
+
+              }
+        }
+
+
+      stage('Giving Permission '){
+           steps {
+                 sh "sudo chmod -R 777 ./release/."
+            }
+      }
+
+}
+
+   post{
+        always{
+            emailext to: env.EMAIL,
+            subject: "jenkins build:${currentBuild.currentResult}: ${env.JOB_NAME}",
+            body: "${currentBuild.currentResult}: Job ${env.JOB_NAME}\nMore Info can be found here: ${env.BUILD_URL}",
+            attachLog: true
+        }
+    }
+
+}
